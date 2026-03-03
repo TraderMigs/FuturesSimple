@@ -114,6 +114,8 @@ export function FuturesTab({ tier }: Props) {
     setTp1(selectedIdea.tp1.toFixed(2));
     setTp2(selectedIdea.tp2.toFixed(2));
     setTp3(selectedIdea.tp3.toFixed(2));
+    // Save snapshot to Supabase when user clicks a Trade Idea card
+    void saveSnapshotFromIdea(selectedIdea);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedIdeaId]);
 
@@ -201,6 +203,44 @@ export function FuturesTab({ tier }: Props) {
       setCopyBusy(false);
     }
   }
+
+  async function saveSnapshotFromIdea(idea: TradeIdea) {
+    try {
+      // trade_snapshots columns: symbol, timeframe, direction, entry, stop_loss, tp1, tp2, tp3
+      const payload = {
+        symbol: idea.symbol,
+        timeframe: idea.timeframe,
+        direction: idea.direction,
+        entry: Number(idea.entry),
+        stop_loss: Number(idea.stop),
+        tp1: Number(idea.tp1),
+        tp2: Number(idea.tp2),
+        tp3: Number(idea.tp3),
+      };
+
+      // Guard against NaN values (Postgres numeric will reject them)
+      if (
+        !payload.symbol ||
+        !payload.timeframe ||
+        !payload.direction ||
+        !Number.isFinite(payload.entry) ||
+        !Number.isFinite(payload.stop_loss) ||
+        !Number.isFinite(payload.tp1) ||
+        !Number.isFinite(payload.tp2) ||
+        !Number.isFinite(payload.tp3)
+      ) {
+        console.warn("[trade_snapshots] Not saving snapshot due to invalid payload", payload);
+        return;
+      }
+
+      const { error } = await supabase.from("trade_snapshots").insert(payload);
+      if (error) console.warn("[trade_snapshots] Insert failed", error);
+    } catch (e) {
+      console.warn("[trade_snapshots] Insert threw", e);
+    }
+  }
+
+
 
   async function onGetTrades() {
     try {
