@@ -1,8 +1,8 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { GeistMono } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
 
-const mono = GeistMono({ subsets: ["latin"] });
+const mono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "FuturesSimple",
