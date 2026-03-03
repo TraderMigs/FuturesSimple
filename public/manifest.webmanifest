@@ -1,0 +1,9 @@
+{
+  "name": "FuturesSimple",
+  "short_name": "Futures",
+  "start_url": "/app",
+  "display": "standalone",
+  "background_color": "#05070b",
+  "theme_color": "#05070b",
+  "description": "SMC-based futures trade ideas + risk calculator"
+}
